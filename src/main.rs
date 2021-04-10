@@ -31,8 +31,10 @@ impl Program {
                 '-' => Operation::DecrementData,
                 '.' => Operation::PrintData,
                 '[' => {
+                    // push what will be the position of the start of a loop
                     start_loop_positions.push(operations.len());
 
+                    // push placeholder value
                     Operation::StartLoop(0)
                 }
                 ']' => {
@@ -80,6 +82,10 @@ impl Program {
                 }
                 Operation::DecrementPtr => self.pointer -= 1,
                 Operation::IncrementData => {
+                    println!(
+                        "doing it data: {:?}, location: {:?}",
+                        self.memory[self.pointer], self.pointer
+                    );
                     self.memory[self.pointer] = self.memory[self.pointer].wrapping_add(1);
                 }
                 Operation::DecrementData => {
@@ -100,7 +106,6 @@ impl Program {
                         continue;
                     }
                 }
-                _ => unimplemented!(),
             }
 
             instruction_pointer += 1;
@@ -112,7 +117,7 @@ fn main() -> io::Result<()> {
     let mut buffer = String::new();
 
     let mut stdin = io::stdin();
-    let result = stdin.read_to_string(&mut buffer)?;
+    stdin.read_to_string(&mut buffer)?;
 
     let mut prog = Program::load_it_up(&buffer);
     prog.run();
